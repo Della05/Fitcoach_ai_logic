@@ -1,0 +1,41 @@
+// 1. Capture data from your specific Google Sheets nodes
+// Ensure your nodes in n8n are named exactly as these strings
+const masterList = $('Filter').all();
+const workoutStats = $items("Workout_stats");
+const nutritionMovementStats = $items("Nutrition_&_movement_stats");
+
+// 2. Map to hold the combined data using Client_ID as the anchor
+const combinedData = {};
+
+// 3. Initialize with Master List data (Profile & Background)
+masterList.forEach(item => {
+  const data = item.json;
+  combinedData[data.Client_ID] = {
+    profile: data,
+    workout_history: [],
+    nutrition_movement_logs: []
+  };
+});
+
+// 4. Map Workout Stats to the correct Client_ID
+workoutStats.forEach(item => {
+  const data = item.json;
+  if (combinedData[data.Client_ID]) {
+    combinedData[data.Client_ID].workout_history.push(data);
+  }
+});
+
+// 5. Map Nutrition & Movement Stats to the correct Client_ID
+nutritionMovementStats.forEach(item => {
+  const data = item.json;
+  if (combinedData[data.Client_ID]) {
+    combinedData[data.Client_ID].nutrition_movement_logs.push(data);
+  }
+});
+
+// 6. Format for n8n AI Agent consumption
+return Object.values(combinedData).map(clientObj => {
+  return {
+    json: clientObj
+  };
+});
