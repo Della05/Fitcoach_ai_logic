@@ -1,0 +1,578 @@
+{
+  "name": "Fitcoach_master_workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1KgmRMaMactDY5PFq1P3GIg3CaSIq0_nYu5QPGReaJhY",
+          "mode": "list",
+          "cachedResultName": "Test Client input",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KgmRMaMactDY5PFq1P3GIg3CaSIq0_nYu5QPGReaJhY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1529301109,
+          "mode": "list",
+          "cachedResultName": "Client_Master_List",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KgmRMaMactDY5PFq1P3GIg3CaSIq0_nYu5QPGReaJhY/edit#gid=1529301109"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -160,
+        16
+      ],
+      "id": "051c5c29-be49-467a-8494-8a76e56643ac",
+      "name": "Client_master_list",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Q8PWQXy7YedfLzBn",
+          "name": "Google Sheets account 13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Capture data from your specific Google Sheets nodes\n// Ensure your nodes in n8n are named exactly as these strings\nconst masterList = $('Filter').all();\nconst workoutStats = $items(\"Workout_stats\");\nconst nutritionMovementStats = $items(\"Nutrition_&_movement_stats\");\n\n// 2. Map to hold the combined data using Client_ID as the anchor\nconst combinedData = {};\n\n// 3. Initialize with Master List data (Profile & Background)\nmasterList.forEach(item => {\n  const data = item.json;\n  combinedData[data.Client_ID] = {\n    profile: data,\n    workout_history: [],\n    nutrition_movement_logs: []\n  };\n});\n\n// 4. Map Workout Stats to the correct Client_ID\nworkoutStats.forEach(item => {\n  const data = item.json;\n  if (combinedData[data.Client_ID]) {\n    combinedData[data.Client_ID].workout_history.push(data);\n  }\n});\n\n// 5. Map Nutrition & Movement Stats to the correct Client_ID\nnutritionMovementStats.forEach(item => {\n  const data = item.json;\n  if (combinedData[data.Client_ID]) {\n    combinedData[data.Client_ID].nutrition_movement_logs.push(data);\n  }\n});\n\n// 6. Format for n8n AI Agent consumption\nreturn Object.values(combinedData).map(clientObj => {\n  return {\n    json: clientObj\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        96,
+        208
+      ],
+      "id": "f9f802c3-7df2-4174-90bf-7c11fda3f013",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1KgmRMaMactDY5PFq1P3GIg3CaSIq0_nYu5QPGReaJhY",
+          "mode": "list",
+          "cachedResultName": "Test Client input",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KgmRMaMactDY5PFq1P3GIg3CaSIq0_nYu5QPGReaJhY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1806747768,
+          "mode": "list",
+          "cachedResultName": "Workout_stats",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KgmRMaMactDY5PFq1P3GIg3CaSIq0_nYu5QPGReaJhY/edit#gid=1806747768"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "=User ID",
+              "lookupValue": "={{ $json['User ID'] }}"
+            }
+          ]
+        },
+        "combineFilters": "=AND",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -160,
+        224
+      ],
+      "id": "3a4c6ae3-25ef-4a0d-aa2b-f34ef20034f5",
+      "name": "Workout_stats",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Q8PWQXy7YedfLzBn",
+          "name": "Google Sheets account 13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1KgmRMaMactDY5PFq1P3GIg3CaSIq0_nYu5QPGReaJhY",
+          "mode": "list",
+          "cachedResultName": "Test Client input",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KgmRMaMactDY5PFq1P3GIg3CaSIq0_nYu5QPGReaJhY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1749302101,
+          "mode": "list",
+          "cachedResultName": "Nutrition_&_movement_stats",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KgmRMaMactDY5PFq1P3GIg3CaSIq0_nYu5QPGReaJhY/edit#gid=1749302101"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "User ID",
+              "lookupValue": "={{ $json['User ID'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -160,
+        432
+      ],
+      "id": "97ee56c3-917f-4dd7-ad41-dd0a21fda5e1",
+      "name": "Nutrition_&_movement_stats",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Q8PWQXy7YedfLzBn",
+          "name": "Google Sheets account 13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Current client data to process:\nProfile : {{ $json.profile['User ID'] }},{{ $json.profile.Name }},{{ $json.profile.Primary_Goal }},{{ $json.profile['Injuries/Notes'] }}\nWorkouts : {{ JSON.stringify($json.workout_history) }}\nNutrition and Movement : {{ JSON.stringify($json.nutrition_movement_logs) }}\n\nInstruction\nAnalyze this specific client data now using your specialized tools and provide the finalized 30-second brief for Mike.\n\nWhen receiving data from a sub-agent tool, do not return the raw JSON object. Synthesize the findings into a clear, natural language sentence for the coach\n",
+        "options": {
+          "systemMessage": "=You are an expert AI Health Coach named \"FitCoach.\" Your goal is to analyze a client's weekly data and produce a structured JSON report.\n\n### THE PRIME DIRECTIVE: CONFLICT RESOLUTION\nYou will often see conflicting data (e.g., excellent workout performance vs. terrible sleep). You must adhere to the following **Hierarchy of Truth** to resolve these conflicts. Safety always trumps progress.\n\n**Priority Level 1: INJURY STATUS (The Absolute Veto)**\n- IF the client reports an injury or severe pain:\n    - IGNORE all workout Personal Bests (PBs) or momentum.\n    - The \"Status\" MUST be \"Red\" or \"Yellow\".\n    - The \"Next Best Action\" MUST focus on rehab, modification, or rest.\n    - NEVER recommend increasing weight or intensity, even if they hit a PR.\n\n**Priority Level 2: RECOVERY & SLEEP (The Biological Veto)**\n- IF average sleep is < 5 hours OR there are multiple nights < 4 hours:\n    - This is a \"Recovery Red Flag.\"\n    - IGNORE workout performance. Even if they hit a PB, their body is in debt.\n    - INSTRUCTION: Advise the client to \"consolidate gains\" and focus on recovery. Do NOT increase weights next week.\n    - Specific phrasing: \"Despite your strength wins, your recovery is critical. We will keep weights static next week to prevent burnout.\"\n\n**Priority Level 3: MOMENTUM (The Green Light)**\n- ONLY if Level 1 (Injury) and Level 2 (Sleep) are cleared, you may look at Workout Performance.\n- IF Sleep > 6h AND No Injury AND PB hit -> Suggest Progressive Overload (increase weight).\n\n---\n\n### ANALYSIS INSTRUCTIONS\n1. **Status:** Determine if \"Green\", \"Yellow\", or \"Red\" based on the Hierarchy above.\n2. **Confidence:** Estimate 0-100% based on how much data is present (if sleep data is missing, confidence is low).\n3. **Summary:** Write a 2-sentence executive summary that acknowledges the conflict (e.g., \"Great lifting week, but sleep is dangerously low.\").\n\n### OUTPUT FORMAT\nYou must output valid JSON only. No markdown. No intro text.\n\n{\n  \"status\": \"Green | Yellow | Red\",\n  \"confidence\": 90,\n  \"next_best_action\": \"One specific, punchy recommendation based on the Hierarchy of Truth.\",\n  \"summary\": \"High-level summary of the week.\",\n  \"workout_insights\": \"Analysis of lifting performance.\",\n  \"nutrition_insights\": \"Analysis of calorie/macro adherence.\",\n  \"movement_insights\": \"Analysis of steps and activity.\",\n  \"sleep_insights\": \"Analysis of sleep duration and quality.\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        336,
+        192
+      ],
+      "id": "9a15e751-a40e-4e13-8330-7fb58b46078b",
+      "name": "AI Agent",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.profile['User ID'] }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        384
+      ],
+      "id": "b48229f0-faf4-411b-8ded-3d658e326fdd",
+      "name": "Simple Memory2"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.profile['User ID'] }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        576,
+        608
+      ],
+      "id": "24a54070-61ec-44f5-81b7-c3a8507ad454",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "toolDescription": "=Workout agent - Use this tool to perform a variance analysis on exercise reps and sets when a client's performance deviates by more than 10% from their plan.",
+        "text": "=System Message\nYou are the Workout Performance Specialist for Fitcoach.AI. Your primary objective is to analyze workout logs to identify 'Plateaus' or recovery risks.\n\nPlateau Identification Logic: \nDefinition: \nA plateau occurs when a client fails to increase weight, reps, or sets for the same exercise over three consecutive sessions, assuming high effort (RPE 8-10).\nVariance Analysis: \nCompare the current 'Actual_Sets_Reps' against the 'Prescribed' plan and the previous two weeks of historical data. \nContextual Check: \nIf performance has stalled but 'RPE' is low (6-7), it is a behavioral adherence issue, not a physiological plateau. * Output: If a plateau is confirmed, flag it as 'High Priority' and suggest specific adjustments like changing volume or exercise order.\nInjury risk logic: If client has stated any particular injuries, then review their workout plan and highlight any exercises that should not be done for specific injury",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        528,
+        448
+      ],
+      "id": "337a206e-65f9-44a3-8db5-c1c35babb2cf",
+      "name": "Workout agent"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Nutrition and Movement agent - Use Nutrition and Movement agent to diagnose sleep, calorie, and step count blockers when recovery flags are raised.",
+        "text": "System Message\nYou are the Metabolic & Recovery Specialist for Fitcoach.AI. Your role is to monitor nutritional adherence and daily activity levels.\n\nSevere Deviation Logic (>30%): \n\nCaloric Deviation: If 'Actual_Calories' is >30% above or below 'Calorie_Target', flag this as an 'Adherence Crisis'. * Under-eating example: Potential risk for metabolic adaptation or fatigue. \nOver-eating example: Potential risk for derailed fat loss goals. \n\nMovement Deviation: If 'Actual_Steps' is >30% below 'Steps_Target', identify the 'Energy Gap'. Calculate how much this drop in TDEE (Total Daily Energy Expenditure) is slowing their progress.\n\nRecovery Correlation: Check if a 30% drop in calories or steps is correlated with 'Sleep_Hours' being <6. If yes, classify as 'Burnout Risk' and trigger the Diagnostic Protocol. \n\nOutput: Provide a 'Next Best Action' that addresses the root cause (e.g., 'Client is in a severe calorie deficit; increase intake by 200 calories immediately to prevent plateau').",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        848,
+        448
+      ],
+      "id": "7c3f3179-8fb5-436c-a6f1-04002896ae0a",
+      "name": "Nutrition and Movement agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.profile['User ID'] }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        944,
+        608
+      ],
+      "id": "072ba181-3799-4f07-bc39-87b781ad1699",
+      "name": "Simple Memory1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "textFormat": {
+            "textOptions": {
+              "type": "json_object"
+            }
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        208,
+        400
+      ],
+      "id": "47249166-37d7-45a0-80e5-3567c72a1b40",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "cHhOmGOM6vZ3TSD3",
+          "name": "OpenAi account 13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        624
+      ],
+      "id": "39e73897-404f-41bb-97a1-7dc793dc4147",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "cHhOmGOM6vZ3TSD3",
+          "name": "OpenAi account 13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        800,
+        656
+      ],
+      "id": "38cd77f7-cfbf-4ec4-abf3-fa1f136b00a6",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "cHhOmGOM6vZ3TSD3",
+          "name": "OpenAi account 13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "82b69d60-22bd-4348-9960-1495b9d07bfd",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -448,
+        16
+      ],
+      "id": "3a68d573-f47f-47e9-85d9-3baf814a0ab9",
+      "name": "Webhook",
+      "webhookId": "82b69d60-22bd-4348-9960-1495b9d07bfd"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        928,
+        192
+      ],
+      "id": "91cbe3f8-3239-48a2-b3e5-4afe692136db",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2c35d4b2-6c2c-4e2b-beb5-a3c83d45229b",
+              "leftValue": "={{ $json['User ID'] }}",
+              "rightValue": "={{ $('Webhook').item.json.body.clientId }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        32,
+        16
+      ],
+      "id": "cc054290-0c59-4162-8e58-7d0ce6b71b7b",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the output from the AI Agent\nconst aiOutput = $input.item.json.output;\nlet finalData;\n\ntry {\n  // 1. First, try to clean up any markdown formatting (like ```json)\n  const cleanText = aiOutput.replace(/```json/g, '').replace(/```/g, '').trim();\n  \n  // 2. Attempt to parse it as real JSON\n  finalData = JSON.parse(cleanText);\n\n} catch (e) {\n  // 3. IF IT FAILS (because AI sent plain text), we catch the error here!\n  // Instead of crashing, we create a valid JSON object manually.\n  finalData = {\n    \"status\": \"Yellow\", \n    \"confidence\": 0,\n    \"next_best_action\": \"AI Formatting Error - See Summary\",\n    \"summary\": aiOutput, // We save the AI's text here so you can still read it in Lovable\n    \"workout_insights\": \"Analysis available in summary.\",\n    \"nutrition_insights\": \"Analysis available in summary.\",\n    \"movement_insights\": \"Analysis available in summary.\",\n    \"sleep_insights\": \"Analysis available in summary.\"\n  };\n}\n\nreturn finalData;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        192
+      ],
+      "id": "cb79f2c0-2da6-4d37-988c-c8786a806ae1",
+      "name": "Code in JavaScript1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Client_master_list": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workout_stats": {
+      "main": [
+        [
+          {
+            "node": "Nutrition_&_movement_stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nutrition_&_movement_stats": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Workout agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Workout agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nutrition and Movement agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory1": {
+      "ai_memory": [
+        [
+          {
+            "node": "Nutrition and Movement agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Workout agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Nutrition and Movement agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Client_master_list",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Workout_stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "12e18658-0a6b-4301-a36b-f0c9b3b9f86e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1953245ac45e51cbb7902519f62968c6661c4ba608adc6515263b127616a4fb8"
+  },
+  "id": "Xp9uviXgSQlY5bB7wqK7q",
+  "tags": []
+}
