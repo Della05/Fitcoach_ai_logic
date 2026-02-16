@@ -34,4 +34,4 @@ Safety: Built-in Medical Flag detection triggers manual coach alerts if the AI d
 How to Explore This Repo
 /workflows: Contains the .json exports of the n8n logic.
 /scripts: Includes the JavaScript snippets used for data mapping and stringification.
-/prompts: The specialized System Messages used to define the sub-agent personas.
+/Frontend_UI: Source code for the Lovable-powered coach dashboard.
